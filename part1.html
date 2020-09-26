@@ -38,6 +38,8 @@
         var platforms;
         var stars;
         var cursors;
+        var score = 0;
+var scoreText;
 
         var game = new Phaser.Game(config);
 
@@ -102,6 +104,8 @@
                 //losowa wartość odbijania od 0.4 do 0.8
             });
 
+            scoreText = this.add.text(16, 16, 'score: 0', { fontSize: '32px', fill: '#000' });
+
             player.body.setGravityY(300); //współczynnik grawitacji
             this.physics.add.collider(player, platforms); //gracz zatrzymuje się na platformie
             this.physics.add.collider(stars, platforms);
@@ -134,6 +138,8 @@
 
         function collectStar(player, star) {
             star.disableBody(true, true); //Usuwamy dla konkretnej dotkniętej gwiazdki ciało fizyczne, czynimy ją nieaktywną i niewidoczną
+            score += 10;
+    scoreText.setText('Score: ' + score);
         }
 
     </script>
