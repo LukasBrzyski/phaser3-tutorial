@@ -36,6 +36,7 @@
 
         var player;
         var platforms;
+        var stars;
         var cursors;
 
         var game = new Phaser.Game(config);
@@ -90,8 +91,22 @@
 
             cursors = this.input.keyboard.createCursorKeys(); //tworzymy obiekt obsługujący strzałki klawiatury
 
+            stars = this.physics.add.group({
+                key: 'star',
+                repeat: 11, //1 + 11 czyli w sumie 12
+                setXY: { x: 12, y: 0, stepX: 70 } //zaczynamy od punktu 12,0 i później co 70px
+            });
+
+            stars.children.iterate(function (child) {
+                child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
+                //losowa wartość odbijania od 0.4 do 0.8
+            });
+
             player.body.setGravityY(300); //współczynnik grawitacji
             this.physics.add.collider(player, platforms); //gracz zatrzymuje się na platformie
+            this.physics.add.collider(stars, platforms);
+
+            this.physics.add.overlap(player, stars, collectStar, null, this); //Jeżeli dojdzie do nałożenia się na siebie gwiazdki i gracza, to oba te obiekty zostaną przekazane do funkcji 'collectStar'
         }
 
         function update() {
@@ -115,6 +130,10 @@
                 //strzałka do góry gdy gracz dotyka podłoża
                 player.setVelocityY(-480);
             }
+        }
+
+        function collectStar(player, star) {
+            star.disableBody(true, true); //Usuwamy dla konkretnej dotkniętej gwiazdki ciało fizyczne, czynimy ją nieaktywną i niewidoczną
         }
 
     </script>
