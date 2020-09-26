@@ -37,9 +37,11 @@
         var player;
         var platforms;
         var stars;
+        var bombs;
         var cursors;
         var score = 0;
-var scoreText;
+        var scoreText;
+        var gameOver = false;
 
         var game = new Phaser.Game(config);
 
@@ -104,29 +106,31 @@ var scoreText;
                 //losowa wartość odbijania od 0.4 do 0.8
             });
 
+            bombs = this.physics.add.group();
+
             scoreText = this.add.text(16, 16, 'score: 0', { fontSize: '32px', fill: '#000' });
 
             player.body.setGravityY(300); //współczynnik grawitacji
-            this.physics.add.collider(player, platforms); //gracz zatrzymuje się na platformie
+            this.physics.add.collider(player, platforms); //kolizje obiektów z platformami
             this.physics.add.collider(stars, platforms);
+            this.physics.add.collider(bombs, platforms);
 
+
+            this.physics.add.collider(player, bombs, hitBomb, null, this); //Jeżeli dojdzie do zderzenia gracza z bombą, to wywołuje się funkcja 'hitBomb'
             this.physics.add.overlap(player, stars, collectStar, null, this); //Jeżeli dojdzie do nałożenia się na siebie gwiazdki i gracza, to oba te obiekty zostaną przekazane do funkcji 'collectStar'
         }
 
         function update() {
             if (cursors.left.isDown) {
                 player.setVelocityX(-160);
-
                 player.anims.play('left', true);
             }
             else if (cursors.right.isDown) {
                 player.setVelocityX(160);
-
                 player.anims.play('right', true);
             }
             else {
                 player.setVelocityX(0);
-
                 player.anims.play('turn');
             }
 
@@ -139,7 +143,33 @@ var scoreText;
         function collectStar(player, star) {
             star.disableBody(true, true); //Usuwamy dla konkretnej dotkniętej gwiazdki ciało fizyczne, czynimy ją nieaktywną i niewidoczną
             score += 10;
-    scoreText.setText('Score: ' + score);
+            scoreText.setText('Score: ' + score);
+
+            if (stars.countActive(true) === 0) {
+                //Jeśli nie ma już gwiazdek, to pojawiają się ponownie
+                stars.children.iterate(function (child) {
+
+                    child.enableBody(true, child.x, 0, true, true);
+
+                });
+
+                //tworzymy bombę w losowym punkcie osi x, zawsze po przeciwnej stronie niż gracz:
+                var x = (player.x < 400) ? Phaser.Math.Between(400, 800) : Phaser.Math.Between(0, 400);
+
+                //ustawiamy bombę na kolidującą ze światem i nadajemy jej losową prędkość:
+                var bomb = bombs.create(x, 16, 'bomb');
+                bomb.setBounce(1);
+                bomb.setCollideWorldBounds(true);
+                bomb.setVelocity(Phaser.Math.Between(-200, 200), 20);
+            }
+        }
+
+        function hitBomb(player, bomb) {
+            //funkcja zatrzymuje grę, zmienia kolor gracza
+            this.physics.pause();
+            player.setTint(0xff0000);
+            player.anims.play('turn');
+            gameOver = true;
         }
 
     </script>
