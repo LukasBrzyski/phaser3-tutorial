@@ -170,6 +170,10 @@
             player.setTint(0xff0000);
             player.anims.play('turn');
             gameOver = true;
+
+            // restart po przegranej
+            this.scene.restart();
+            score = 0;
         }
 
     </script>
