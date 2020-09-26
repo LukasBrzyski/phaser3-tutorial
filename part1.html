@@ -34,6 +34,10 @@
             }
         };
 
+        var player;
+        var platforms;
+        var cursors;
+
         var game = new Phaser.Game(config);
 
         function preload() {
@@ -45,7 +49,7 @@
                 'assets/dude.png',
                 { frameWidth: 32, frameHeight: 48 }
             );
-            
+
         }
 
         function create() {
@@ -84,12 +88,33 @@
                 repeat: -1
             });
 
+            cursors = this.input.keyboard.createCursorKeys(); //tworzymy obiekt obsługujący strzałki klawiatury
+
             player.body.setGravityY(300); //współczynnik grawitacji
             this.physics.add.collider(player, platforms); //gracz zatrzymuje się na platformie
         }
 
         function update() {
-            
+            if (cursors.left.isDown) {
+                player.setVelocityX(-160);
+
+                player.anims.play('left', true);
+            }
+            else if (cursors.right.isDown) {
+                player.setVelocityX(160);
+
+                player.anims.play('right', true);
+            }
+            else {
+                player.setVelocityX(0);
+
+                player.anims.play('turn');
+            }
+
+            if (cursors.up.isDown && player.body.touching.down) {
+                //strzałka do góry gdy gracz dotyka podłoża
+                player.setVelocityY(-480);
+            }
         }
 
     </script>
