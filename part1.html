@@ -45,6 +45,7 @@
                 'assets/dude.png',
                 { frameWidth: 32, frameHeight: 48 }
             );
+            
         }
 
         function create() {
@@ -82,9 +83,13 @@
                 frameRate: 10,
                 repeat: -1
             });
+
+            player.body.setGravityY(300); //współczynnik grawitacji
+            this.physics.add.collider(player, platforms); //gracz zatrzymuje się na platformie
         }
 
         function update() {
+            
         }
 
     </script>
